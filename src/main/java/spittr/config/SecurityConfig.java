@@ -141,6 +141,8 @@ public class SecurityConfig {
 				.authorizeRequests()							
 					.antMatchers("/spitter/register")
 						.permitAll()			
+					.antMatchers("/")
+						.permitAll()			
 					.antMatchers("/**")
 						.authenticated()
 //						.hasAuthority("ROLE_SPITTER")
