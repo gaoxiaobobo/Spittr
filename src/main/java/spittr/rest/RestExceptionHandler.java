@@ -1,7 +1,17 @@
 package spittr.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -14,6 +24,13 @@ import spittr.exceptions.MissingEntityException;
 
 @RestEndpointAdvice
 public class RestExceptionHandler {
+	
+	private MessageSource messageSource;
+	 
+    @Autowired
+    public RestExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
   
 	@ExceptionHandler(GenericNotFoundException.class)
 	@ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
@@ -38,5 +55,25 @@ public class RestExceptionHandler {
     public Error objectNotFound(MissingCredentialsException e) {		
 		return new Error(400, e.getClassName() + " missing credential [" + e.getMessage() + "]");	    
 	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Error processValidationError(MethodArgumentNotValidException e) {
+		BindingResult result = e.getBindingResult();
+        List<FieldError> fieldErrors = result.getFieldErrors();
+        List<String> errors = new ArrayList<String>();
+        
+        for (FieldError fieldError: fieldErrors) {
+            String localizedErrorMessage = resolveLocalizedErrorMessage(fieldError);
+            errors.add(localizedErrorMessage);
+        }
+		return new Error(400, errors.toString());	    
+	}
+	
+	private String resolveLocalizedErrorMessage(FieldError fieldError) {
+		Locale currentLocale =  LocaleContextHolder.getLocale();
+        String localizedErrorMessage = messageSource.getMessage(fieldError, currentLocale);
+        return localizedErrorMessage;
+    }
 
 }

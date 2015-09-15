@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 public class SpittleForm {
 
 	@NotNull
-	@Size(min=1, max=140, message="{spittleMessage.size}")
+	@Size(min = 2, max = 140, message = "{validate.spittle.message}")
 	private String message;
 	
 	public String getMessage() {
