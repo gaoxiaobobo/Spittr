@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +24,7 @@ import spittr.exceptions.MissingEntityException;
 
 
 @RestEndpoint
-@RequestMapping(value="/rest/spittles")
+@RequestMapping(value="/spittles")
 public class SpittleRestEndpoint {
 	private static final Logger logger = LoggerFactory.getLogger(SpittleRestEndpoint.class);	
 	
@@ -57,11 +55,10 @@ public class SpittleRestEndpoint {
 	}
 	
 	@RequestMapping(
-				value="",
-				method=RequestMethod.POST, 
-				consumes="application/json"
-			)	
-	public ResponseEntity<Spittle> saveSpittle(
+			value="",
+			method=RequestMethod.POST, 
+			consumes="application/json")
+	public Spittle saveSpittle(
 			@RequestBody Spittle spittle,			
 			UriComponentsBuilder ucb){
 		
@@ -78,6 +75,6 @@ public class SpittleRestEndpoint {
 				   .build()
 				   .toUri();				
 		headers.setLocation(locationUri);
-		return new ResponseEntity<Spittle>(spittle, headers, HttpStatus.CREATED);		
+		return spittle;		
 	}		
 }

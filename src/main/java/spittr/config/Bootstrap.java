@@ -48,6 +48,7 @@ public class Bootstrap implements WebApplicationInitializer {
                 new AnnotationConfigWebApplicationContext();
         restContext.register(RestServletContextConfiguration.class);
         DispatcherServlet servlet = new DispatcherServlet(restContext);
+        // Recognize OPTIONS requests        
         servlet.setDispatchOptionsRequest(true);
         dispatcher = servletContext.addServlet(
                 "springRestDispatcher", servlet

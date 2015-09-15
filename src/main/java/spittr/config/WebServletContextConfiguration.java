@@ -2,9 +2,12 @@ package spittr.config;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -28,9 +31,14 @@ import spittr.config.annotation.WebControllerAdvice;
 @ComponentScan(
         basePackages = "spittr.web",
         useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter({WebController.class, WebControllerAdvice.class})
+        includeFilters = @ComponentScan.Filter({
+        	WebController.class,
+        	WebControllerAdvice.class})
 )
 public class WebServletContextConfiguration extends WebMvcConfigurerAdapter {
+	
+	@Autowired
+	SpringValidatorAdapter validator;
 
 	/*
 	 * Declare view resolver
@@ -78,23 +86,22 @@ public class WebServletContextConfiguration extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {	    
 	    super.addResourceHandlers(registry);
 	}
-	
-//	@Bean
-//	public MessageSource messageSource(){
-//		ReloadableResourceBundleMessageSource messageSource =
-//				new ReloadableResourceBundleMessageSource();
-//		messageSource.setBasename("/WEB-INF/messages");
-//		messageSource.setCacheSeconds(10);
-//		return messageSource;	
-//	}
-	
+
 	@Bean
 	public MultipartResolver multipartResolver() throws IOException {
 		return new StandardServletMultipartResolver();
 	}
 	
+	// Bypass controller and map directly
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/login").setViewName("login");		
 	}	
+	
+	// Tell web MVC to use the validator in RootContextConfiguration
+	@Override
+    public Validator getValidator()
+    {
+        return this.validator;
+    }
 }

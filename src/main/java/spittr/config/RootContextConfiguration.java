@@ -2,6 +2,7 @@ package spittr.config;
 
 import java.nio.charset.StandardCharsets;
 
+import org.hibernate.validator.HibernateValidator;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 @Configuration
@@ -20,7 +23,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
         @ComponentScan.Filter({Controller.class, ControllerAdvice.class})
 )
 @Import({ SecurityConfig.class })
-//@ImportResource({ "classpath:spittr/config/securityConfig.xml" })
 public class RootContextConfiguration {    
 				
     @Bean
@@ -34,6 +36,26 @@ public class RootContextConfiguration {
                 "/WEB-INF/i18n/messages"
         );
         return messageSource;
+    }
+    
+    // Explicitly declare the validation method
+    // Set the validation messages to the same as the internationalization
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean()
+    {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();        
+        validator.setValidationMessageSource(this.messageSource());
+        return validator;
+    }
+    
+    // Enable method validation
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor()
+    {
+        MethodValidationPostProcessor processor =
+                new MethodValidationPostProcessor();
+        processor.setValidator(this.localValidatorFactoryBean());
+        return processor;
     }
     
 }

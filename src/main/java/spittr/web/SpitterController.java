@@ -53,7 +53,8 @@ public class SpitterController {
 		    @Valid RegisterForm registerForm,		    
 		    Errors errors) {
 		
-		String uploads = "/home/jvwong/Projects/spring/workspace/Spittr/tmp/uploads/";
+		String uploads = "/home/jeffrey/Sync/Projects/sts-workspace/"
+				+ "Spittr/src/main/webapp/tmp/spittr/uploads";
 	  
 		if (errors.hasErrors()) {
 			logger.info("Register form errors encountered");

@@ -16,7 +16,7 @@ import spittr.exceptions.MissingEntityException;
 public class RestExceptionHandler {
   
 	@ExceptionHandler(GenericNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
     public Error objectNotFound(GenericNotFoundException e) {		
 		return new Error(404, e.getClassName() + " [" + e.getId() + "] not found");	    
 	}
